@@ -16,3 +16,11 @@ erDiagram
     FACT_SALES ||--o{ DIM_REGION : in_region
     DIM_PRODUCT }o--|| DIM_CATEGORY : belongs_to
     DIM_CUSTOMER }o--|| DIM_GEOGRAPHY : located_in
+
+Fact Table
+FactSales
+
+Granularity: Individual Transaction
+Storage Mode: Import
+Partitioning: Monthly partitions on DateKey
+Incremental Refresh: Enabled (last 5 years)
