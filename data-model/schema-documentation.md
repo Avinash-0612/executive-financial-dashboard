@@ -16,7 +16,7 @@ erDiagram
     DIM_PRODUCT }o--|| DIM_CATEGORY : belongs_to
     DIM_CUSTOMER }o--|| DIM_GEOGRAPHY : located_in
 Fact Tables
-FactSales (Granularity: Individual Transaction)
+
 Table
 Copy
 Column	Data Type	Description	Relationship
