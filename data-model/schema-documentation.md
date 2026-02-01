@@ -17,10 +17,15 @@ erDiagram
     DIM_PRODUCT }o--|| DIM_CATEGORY : belongs_to
     DIM_CUSTOMER }o--|| DIM_GEOGRAPHY : located_in
 
-Fact Table
-FactSales
+## Fact Table
 
-Granularity: Individual Transaction
-Storage Mode: Import
-Partitioning: Monthly partitions on DateKey
+### FactSales
+
+Granularity: Individual Transaction  
+Storage Mode: Import  
+Partitioning: Monthly partitions on DateKey  
 Incremental Refresh: Enabled (last 5 years)
+
+| Column | Data Type | Description |
+|-------|-----------|-------------|
+...
