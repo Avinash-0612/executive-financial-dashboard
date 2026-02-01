@@ -1,7 +1,10 @@
+
+```markdown
 # Data Model Schema Documentation
 
 ## Model Architecture: Star Schema with Snowflake Extensions
 
+```mermaid
 erDiagram
     FACT_SALES ||--o{ DIM_DATE : "sold_on"
     FACT_SALES ||--o{ DIM_CUSTOMER : "purchased_by"
