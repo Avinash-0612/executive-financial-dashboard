@@ -19,3 +19,15 @@ TRUE()
 // CFO sees all financial data but restricted to Finance department costs
 [Department] = "Finance" || [Department] = "Executive"
 
+// Regional VP sees only their region
+[Region] = USERNAME()
+
+// Department heads see only their department
+[Department] = LOOKUPVALUE(
+    DimUser[Department],
+    DimUser[Email],
+    USERNAME()
+)
+
+// Auditors see aggregated data only, no individual transactions
+[HierarchLevel] = "Summary"
