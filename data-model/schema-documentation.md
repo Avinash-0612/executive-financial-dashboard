@@ -1,4 +1,4 @@
-```markdown
+
 # Data Model Schema Documentation
 
 ## Model Architecture: Star Schema with Snowflake Extensions
