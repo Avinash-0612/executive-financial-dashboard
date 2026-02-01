@@ -1,16 +1,22 @@
 # Row-Level Security (RLS) Configuration
 
 ## Overview
+
 This document defines the security roles and DAX filter rules implemented in the Executive Financial Dashboard to ensure data governance and compliance (GDPR/SOC2).
 
 ## Security Roles
 
 ### 1. CEO (Chief Executive Officer)
+
 **Access Level:** Full Organization
+
 **DAX Filter:** None (Unrestricted access to all data)
+
 ```dax
 // CEO sees everything - no filters applied
 TRUE()
+```dax
+```dax
 2. CFO (Chief Financial Officer)
 Access Level: All Financial Data
 DAX Filter:
@@ -18,6 +24,8 @@ dax
 Copy
 // CFO sees all financial data but restricted to Finance department costs
 [Department] = "Finance" || [Department] = "Executive"
+```dax
+```dax
 3. Regional VP (Sales)
 Access Level: Regional Data Only
 DAX Filter:
@@ -26,6 +34,8 @@ Copy
 // Regional VP sees only their region
 [Region] = USERNAME()
 Note: Assumes username matches region name (e.g., "North America")
+```dax
+```dax
 4. Department Head
 Access Level: Department Specific
 DAX Filter:
@@ -37,6 +47,8 @@ Copy
     DimUser[Email],
     USERNAME()
 )
+```dax
+```dax
 5. External Auditor
 Access Level: Read-Only, Aggregated Only
 DAX Filter:
@@ -44,6 +56,7 @@ dax
 Copy
 // Auditors see aggregated data only, no individual transactions
 [HierarchLevel] = "Summary"
+```dax
 Note: This role has additional Object-Level Security (OLS) preventing access to sensitive columns
 Implementation Steps
 Power BI Desktop:
@@ -57,6 +70,7 @@ Add email addresses to respective roles
 Enable "Test as role" before production
 Dynamic Row-Level Security (Advanced):
 For complex organizations, use bridge table approach:
+```dax
 dax
 Copy
 // Dynamic RLS using UserAttributes table
@@ -68,15 +82,16 @@ SELECTCOLUMNS(
     ),
     "RegionID", UserAccess[RegionID]
 )
-Security Matrix
+```dax
+**Security Matrix**
 Table
 Copy
 Role	Revenue Data	Cost Data	Customer PII	Forecasts	Real-time
-CEO	✅ Full	✅ Full	✅ Full	✅ Full	✅ Full
-CFO	✅ Full	✅ Full	❌ Masked	✅ Full	✅ Full
-Regional VP	✅ Regional	✅ Regional	❌ No Access	✅ Regional	✅ Regional
-Dept Head	✅ Dept	✅ Dept	❌ No Access	✅ Dept	❌ No
-Auditor	✅ Summary	✅ Summary	❌ No Access	❌ No	❌ No
+CEO	Full	Full	Full	Full	Full
+CFO	Full	Full	Masked	Full	Full
+Regional VP	Regional	Regional	No Access	Regional	Regional
+Dept Head	Dept	Dept	No Access	Dept	No
+Auditor	Summary	Summary	No Access	No	No
 Testing RLS
 Always test RLS before publishing:
 Power BI Desktop: View as → Select Role
