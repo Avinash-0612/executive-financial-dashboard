@@ -1,1 +1,111 @@
+-- ============================================================================
+-- PERFORMANCE KPIS & ADVANCED ANALYTICS
+-- Executive Financial Dashboard
+-- ============================================================================
 
+-- 1. Gross Profit Margin %
+Gross Profit Margin % = 
+VAR Revenue = [Total Revenue]
+VAR Cost = SUMX(FactSales, FactSales[Quantity] * FactSales[UnitCost])
+VAR GrossProfit = Revenue - Cost
+RETURN
+    DIVIDE(GrossProfit, Revenue, 0)
+
+-- 2. Net Profit Margin %
+Net Profit Margin % = 
+DIVIDE([Net Profit], [Total Revenue], 0)
+
+-- 3. Operating Expense Ratio
+OpEx Ratio % = 
+DIVIDE([Operating Expenses], [Total Revenue], 0)
+
+-- 4. Return on Investment (ROI)
+ROI % = 
+VAR NetProfit = [Net Profit]
+VAR Investment = SUM(DimInvestment[InvestmentAmount])
+RETURN
+    DIVIDE(NetProfit, Investment, 0)
+
+-- 5. Current Ratio (Liquidity)
+Current Ratio = 
+VAR CurrentAssets = SUM(DimBalanceSheet[CurrentAssets])
+VAR CurrentLiabilities = SUM(DimBalanceSheet[CurrentLiabilities])
+RETURN
+    DIVIDE(CurrentAssets, CurrentLiabilities, 0)
+
+-- 6. Debt-to-Equity Ratio
+Debt to Equity = 
+VAR TotalDebt = SUM(DimBalanceSheet[TotalDebt])
+VAR TotalEquity = SUM(DimBalanceSheet[TotalEquity])
+RETURN
+    DIVIDE(TotalDebt, TotalEquity, 0)
+
+-- 7. Days Sales Outstanding (DSO)
+DSO = 
+VAR AccountsReceivable = SUM(DimBalanceSheet[AccountsReceivable])
+VAR TotalCreditSales = [Total Revenue]
+VAR DaysInPeriod = 90  -- Quarterly
+RETURN
+    DIVIDE(AccountsReceivable, TotalCreditSales, 0) * DaysInPeriod
+
+-- 8. Inventory Turnover
+Inventory Turnover = 
+VAR COGS = SUMX(FactSales, FactSales[Quantity] * FactSales[UnitCost])
+VAR AvgInventory = AVERAGE(DimInventory[InventoryValue])
+RETURN
+    DIVIDE(COGS, AvgInventory, 0)
+
+-- 9. What-If Analysis: Revenue Forecast
+Forecasted Revenue = 
+VAR CurrentRevenue = [Total Revenue]
+VAR GrowthRate = [Selected Growth Rate]  -- From What-If parameter
+RETURN
+    CurrentRevenue * (1 + GrowthRate)
+
+-- 10. Budget Utilization %
+Budget Utilization % = 
+DIVIDE([Total Revenue], [Budget Amount], 0)
+
+-- 11. Variance Analysis (Color Coding Helper)
+Variance Status = 
+VAR Variance = [Revenue Variance %]
+RETURN
+    SWITCH(
+        TRUE(),
+        Variance > 0.05, "Above Budget",
+        Variance < -0.05, "Below Budget",
+        "On Target"
+    )
+
+-- 12. Moving Average (7-Day for Real-time)
+7-Day Moving Avg Revenue = 
+AVERAGEX(
+    DATESINPERIOD(
+        DimDate[Date],
+        MAX(DimDate[Date]),
+        -7,
+        DAY
+    ),
+    [Total Revenue]
+)
+
+-- 13. Market Share %
+Market Share % = 
+VAR OurRevenue = [Total Revenue]
+VAR TotalMarketRevenue = CALCULATE([Total Revenue], ALL(DimCompetitor))
+RETURN
+    DIVIDE(OurRevenue, TotalMarketRevenue, 0)
+
+-- 14. Customer Acquisition Cost (CAC)
+CAC = 
+VAR MarketingSpend = SUM(FactMarketing[Spend])
+VAR NewCustomers = DISTINCTCOUNT(FactSales[NewCustomerID])
+RETURN
+    DIVIDE(MarketingSpend, NewCustomers, 0)
+
+-- 15. Lifetime Value (LTV) to CAC Ratio
+LTV:CAC Ratio = 
+VAR LTV = AVERAGEX(DimCustomer, [Customer Lifetime Value])
+VAR CustomerAcquisitionCost = [CAC]
+RETURN
+    DIVIDE(LTV, CustomerAcquisitionCost, 0)
