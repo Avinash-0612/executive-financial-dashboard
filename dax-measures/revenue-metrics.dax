@@ -1,1 +1,94 @@
+-- ============================================================================
+-- REVENUE METRICS - ADVANCED DAX CALCULATIONS
+-- Executive Financial Dashboard
+-- Author: Avinash Chinnabattuni
+-- ============================================================================
 
+-- 1. Total Revenue (Baseline Measure)
+Total Revenue = 
+SUMX(
+    FactSales,
+    FactSales[Quantity] * FactSales[UnitPrice]
+)
+
+-- 2. Revenue Year-to-Date (YTD)
+Revenue YTD = 
+CALCULATE(
+    [Total Revenue],
+    DATESYTD(DimDate[Date])
+)
+
+-- 3. Revenue Previous Year (Same Period)
+Revenue PY = 
+CALCULATE(
+    [Total Revenue],
+    SAMEPERIODLASTYEAR(DimDate[Date])
+)
+
+-- 4. Year-over-Year Growth %
+YoY Revenue Growth % = 
+VAR CurrentRevenue = [Total Revenue]
+VAR PreviousRevenue = [Revenue PY]
+VAR Growth = CurrentRevenue - PreviousRevenue
+VAR GrowthPct = DIVIDE(Growth, PreviousRevenue, 0)
+RETURN
+    GrowthPct
+
+-- 5. Revenue Variance (Actual vs Budget)
+Revenue Variance = 
+[Total Revenue] - [Budget Amount]
+
+Revenue Variance % = 
+DIVIDE([Revenue Variance], [Budget Amount], 0)
+
+-- 6. Rolling 12-Month Revenue
+Rolling 12M Revenue = 
+CALCULATE(
+    [Total Revenue],
+    DATESINPERIOD(
+        DimDate[Date],
+        MAX(DimDate[Date]),
+        -12,
+        MONTH
+    )
+)
+
+-- 7. Revenue per Employee (Productivity Metric)
+Revenue per Employee = 
+VAR TotalRevenue = [Total Revenue]
+VAR EmployeeCount = DISTINCTCOUNT(DimEmployee[EmployeeID])
+RETURN
+    DIVIDE(TotalRevenue, EmployeeCount, 0)
+
+-- 8. Cumulative Revenue (Running Total)
+Cumulative Revenue = 
+CALCULATE(
+    [Total Revenue],
+    FILTER(
+        ALLSELECTED(DimDate[Date]),
+        DimDate[Date] <= MAX(DimDate[Date])
+    )
+)
+
+-- 9. Revenue by Category (Dynamic Segmentation)
+Revenue by Category = 
+SUMMARIZE(
+    FactSales,
+    DimProduct[Category],
+    "Revenue", [Total Revenue]
+)
+
+-- 10. Top N Customers Revenue
+Top 10 Customers Revenue = 
+VAR TopCustomers = 
+    TOPN(
+        10,
+        ALLSELECTED(DimCustomer[CustomerName]),
+        [Total Revenue],
+        DESC
+    )
+RETURN
+    CALCULATE(
+        [Total Revenue],
+        KEEPFILTERS(TopCustomers)
+    )
