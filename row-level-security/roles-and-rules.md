@@ -11,3 +11,16 @@ This document defines the security roles and DAX filter rules implemented in the
 ```dax
 // CEO sees everything - no filters applied
 TRUE()
+
+2. CFO (Chief Financial Officer)
+Access Level: All Financial Data
+DAX Filter:
+
+// CFO sees all financial data but restricted to Finance department costs
+[Department] = "Finance" || [Department] = "Executive"
+
+3. Regional VP (Sales)
+Access Level: Regional Data Only
+DAX Filter:
+// Regional VP sees only their region
+[Region] = USERNAME()
